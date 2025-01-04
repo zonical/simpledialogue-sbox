@@ -1,0 +1,145 @@
+{
+  "__guid": "325a4042-0696-43dd-a79d-dcc314299ba3",
+  "GameObjects": [
+    {
+      "__guid": "2ec29c12-9f12-4c3b-9d03-08098e970fba",
+      "Flags": 0,
+      "Name": "Test",
+      "Position": "-126.4293,-187.5311,115.5769",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.ScreenPanel",
+          "__guid": "a9cba402-47b3-4f73-a848-835683f7a189",
+          "AutoScreenScale": true,
+          "Opacity": 1,
+          "Scale": 1,
+          "ScaleStrategy": "ConsistentHeight",
+          "ZIndex": 100
+        },
+        {
+          "__type": "SimpleDialogue.SimpleDialoguePanelComponent",
+          "__guid": "95e66848-60b9-456a-acb6-9529b466df7a",
+          "Sounds": [
+            "sounds/snd_txtsans.vsnd"
+          ],
+          "AdvanceCharacterKey": "enter",
+          "BackgroundColor": "0.16744,0.12305,0.16226,1",
+          "BorderColor": "0.6021,0.91163,0.80329,1",
+          "BorderCornerRadius": 10,
+          "BorderSize": 20,
+          "DelayAmountRemoved": 0,
+          "Dialogue": [
+            "* Test dialogue!!! But this is [[color:red]]in red."
+          ],
+          "FontFamily": "EarthBound Dialogue",
+          "FontSize": 50,
+          "FontStyle": "None",
+          "OnCharacterPrintedAction": {
+            "__version": 8,
+            "__guid": "0a0d4330-6955-4a04-8a8c-8ac48268bfbf",
+            "__changeId": 8,
+            "UserData": {
+              "Title": "On Character Printed Action",
+              "ReferencedComponentTypes": []
+            },
+            "Variables": [],
+            "Nodes": [
+              {
+                "Id": 0,
+                "Type": "input"
+              },
+              {
+                "Id": 1,
+                "Type": "log.info",
+                "UserData": {
+                  "Position": "372,0"
+                }
+              }
+            ],
+            "Links": [
+              {
+                "SrcId": 0,
+                "SrcName": "_signal",
+                "DstId": 1,
+                "DstName": "_signal"
+              },
+              {
+                "SrcId": 0,
+                "SrcName": "Character",
+                "DstId": 1,
+                "DstName": "format"
+              }
+            ]
+          },
+          "OverrideStyleSheet": true,
+          "PanelHeight": 300,
+          "PanelWidth": 800,
+          "PrintStyle": "CharacterByCharacter",
+          "RightOffset": 20,
+          "SpeedUpKey": "shift",
+          "TextColor": "1,0.92093,0.84186,1",
+          "TimeDelayPerCharacter": 0.05,
+          "TopOffset": 20,
+          "UsesActionGraph": true,
+          "UsesSounds": true,
+          "WaitForCompletion": true
+        }
+      ]
+    },
+    {
+      "__guid": "f80fd723-6fbf-4290-8e8f-2ed034e3f0b9",
+      "Flags": 0,
+      "Name": "Camera",
+      "Tags": "maincamera",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.CameraComponent",
+          "__guid": "41a8b6c8-3694-4966-a631-123cef6c28f1",
+          "BackgroundColor": "0.33333,0.46275,0.52157,1",
+          "ClearFlags": "All",
+          "FieldOfView": 60,
+          "IsMainCamera": true,
+          "Orthographic": false,
+          "OrthographicHeight": 1204,
+          "Priority": 1,
+          "RenderExcludeTags": "",
+          "RenderTags": "",
+          "TargetEye": "None",
+          "Viewport": "0,0,1,1",
+          "ZFar": 10000,
+          "ZNear": 10
+        }
+      ]
+    }
+  ],
+  "SceneProperties": {
+    "FixedUpdateFrequency": 50,
+    "MaxFixedUpdates": 5,
+    "NetworkFrequency": 60,
+    "NetworkInterpolation": true,
+    "PhysicsSubSteps": 1,
+    "ThreadedAnimation": true,
+    "TimeScale": 1,
+    "UseFixedUpdate": true,
+    "Metadata": {},
+    "NavMesh": {
+      "Enabled": false,
+      "IncludeStaticBodies": true,
+      "IncludeKeyframedBodies": true,
+      "EditorAutoUpdate": true,
+      "AgentHeight": 64,
+      "AgentRadius": 16,
+      "AgentStepSize": 18,
+      "AgentMaxSlope": 40,
+      "ExcludedBodies": "",
+      "IncludedBodies": ""
+    }
+  },
+  "ResourceVersion": 2,
+  "Title": null,
+  "Description": null,
+  "__references": [],
+  "__version": 2
+}

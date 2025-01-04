@@ -1,0 +1,184 @@
+@using Sandbox;
+@using Sandbox.UI;
+@using SimpleDialogue;
+@using System;
+@using System.Collections.Generic;
+
+@inherits PanelComponent
+@namespace SimpleDialogue
+
+<root>
+	<SimpleDialoguePanel
+	@ref="DialoguePanel"
+	@PrintStyle=@PrintStyle
+	@DialogueStrings=@Dialogue
+	@CharacterDelay=@TimeDelayPerCharacter
+	@DefaultTextColor=@((Color)TextColor)
+	@WaitForTextCompletion=@WaitForCompletion
+	</SimpleDialoguePanel>
+</root>
+
+@code
+{
+	SimpleDialoguePanel DialoguePanel { get; set; }
+
+	// ==========================================================
+
+	[Property, Feature("Dialogue"), TextArea]
+	public List<string> Dialogue { get; set; } = new();
+
+	[Property, Feature("Dialogue")] 
+	public DialoguePrintStyle PrintStyle { get; set; }
+
+	[Property, Feature("Dialogue"), 
+	ShowIf("PrintStyle", DialoguePrintStyle.CharacterByCharacter)] 
+	public float TimeDelayPerCharacter { get; set; } = 0.1f;
+
+	// ==========================================================
+
+	[Property, FeatureEnabled("Style")]
+	public bool OverrideStyleSheet { get; set; } = false;
+
+	[Property, Feature("Style"), Group("Panel Dimensions"),
+	Description("Sets the width of the panel in pixels. Use CSS for further control (e.g percentage).")]
+	public float? PanelWidth { get; set; }
+
+	[Property, Feature("Style"), Group("Panel Dimensions"),
+	Description("Sets the height of the panel in pixels. Use CSS for further control (e.g percentage).")]
+	public float? PanelHeight { get; set; }
+
+	[Property, Feature("Style"), Group("Panel Positioning"),
+	Description("Similar to CSS \"left\" property.")]
+	public float? LeftOffset { get; set; }
+
+	[Property, Feature("Style"), Group("Panel Positioning"),
+	Description("Similar to CSS \"right\" property.")]
+	public float? RightOffset { get; set; }
+
+	[Property, Feature("Style"), Group("Panel Positioning"),
+	Description("Similar to CSS \"top\" property.")]
+	public float? TopOffset { get; set; }
+
+	[Property, Feature("Style"), Group("Panel Positioning"),
+	Description("Similar to CSS \"bottom\" property.")]
+	public float? BottomOffset { get; set; }
+
+	[Property, Feature("Style"), Group("Background")]
+	public Color? BackgroundColor { get; set; }
+
+	[Property, Feature("Style"), Group("Border")]
+	public Color? BorderColor { get; set; }
+
+	[Property, Feature("Style"), Group("Border"),
+	Description("Sets the thickness of the border in pixels. Use CSS for further control (e.g percentage).")]
+	public float? BorderSize { get; set; }
+
+	[Property, Feature("Style"), Group("Border")]
+	public float? BorderCornerRadius { get; set; }
+
+	[Property, Feature("Style"), Group("Text Display"), FontName]
+	public string? FontFamily { get; set; }
+
+	[Property, Feature("Style"), Group("Text Display"),
+	Description("Sets the size of the text. Use CSS for further control (e.g percentage).")]
+	public float? FontSize { get; set; }
+
+	[Property, Feature("Style"), Group("Text Display")]
+	public FontStyle? FontStyle { get; set; }
+
+	[Property, Feature("Style"), Group("Text Display")]
+	public Color? TextColor { get; set; } = Color.White;
+
+
+	// ==========================================================
+
+	[Property, Feature("Input"), Header("Advancing Dialogue")]
+	public string AdvanceCharacterKey { get; set; } = "enter";
+
+	[Property, Feature("Input"), ShowIf("PrintStyle", DialoguePrintStyle.CharacterByCharacter),
+	Description("Whether or not we need to wait for the dialogue to be completed before being able to advance.")] 
+	public bool WaitForCompletion { get; set; } = true;
+
+	[Property, Feature("Input"), Header("Speed Up Dialogue"),
+	ShowIf("PrintStyle", DialoguePrintStyle.CharacterByCharacter)]
+	public string SpeedUpKey { get; set; } = "shift";
+
+	[Property, Feature("Input"),
+	ShowIf("PrintStyle", DialoguePrintStyle.CharacterByCharacter),
+	Description("How much delay is removed from TimeDelayPerCharacter when we speed up the text.")]
+	public float DelayAmountRemoved { get; set; }
+
+	[Property, FeatureEnabled("Sound")]
+	public bool UsesSounds { get; set; } = false;
+
+	[Property, Feature("Sound")]
+	public List<SoundFile> Sounds = new();
+
+	// ==========================================================
+
+	[Property, FeatureEnabled("ActionGraph")]
+	public bool UsesActionGraph { get; set; } = false;
+
+	[Property, Feature("ActionGraph")]
+	public IDialoguePanel.OnCharacterPrinted OnCharacterPrintedAction { get; set; }
+
+	[Property, Feature("ActionGraph")]
+	public IDialoguePanel.OnControlCodeHit OnControlCodeHitAction { get; set; }
+
+	[Property, Feature("ActionGraph")]
+	public IDialoguePanel.OnAllCharactersPrinted OnAllCharactersPrintedAction { get; set; }
+
+	[Property, Feature("ActionGraph")]
+	public IDialoguePanel.OnAllDialogueDisplayed OnAllDialogueDisplayedAction { get; set; }
+
+
+	/// <summary>
+	/// the hash determines if the system should be rebuilt. If it changes, it will be rebuilt
+	/// </summary>
+	protected override int BuildHash() => System.HashCode.Combine(Dialogue, DialoguePanel?.DisplayedDialogue);
+
+	protected override void OnTreeFirstBuilt()
+	{
+		base.OnTreeFirstBuilt();
+
+		if (DialoguePanel is null) return;
+		BuildStyle();
+		PushSounds();
+	}
+
+	private void BuildStyle()
+	{
+		if (!OverrideStyleSheet) return;
+
+		if (PanelWidth is not null) DialoguePanel.Style.Width = new Length() { Unit = LengthUnit.Pixels, Value = PanelWidth.Value };
+		if (PanelHeight is not null) DialoguePanel.Style.Height = new Length() { Unit = LengthUnit.Pixels, Value = PanelHeight.Value };
+
+		if (LeftOffset is not null) Panel.Style.Left = new Length() { Unit = LengthUnit.Pixels, Value = LeftOffset.Value };
+		if (RightOffset is not null) Panel.Style.Right = new Length() { Unit = LengthUnit.Pixels, Value = RightOffset.Value };
+		if (TopOffset is not null) Panel.Style.Top = new Length() { Unit = LengthUnit.Pixels, Value = TopOffset.Value };
+		if (BottomOffset is not null) Panel.Style.Bottom = new Length() { Unit = LengthUnit.Pixels, Value = BottomOffset.Value };
+
+		if (BackgroundColor is not null) DialoguePanel.Style.BackgroundColor = BackgroundColor;
+
+		if (BorderSize is not null) DialoguePanel.Style.BorderWidth = new Length() { Unit = LengthUnit.Pixels, Value = BorderSize.Value };
+		if (BorderColor is not null) DialoguePanel.Style.BorderColor = BorderColor;
+		if (BorderCornerRadius is not null) DialoguePanel.Style.Set("border-radius", BorderCornerRadius.ToString());
+
+		if (FontFamily is not null) DialoguePanel.Style.FontFamily = FontFamily;
+		if (FontSize is not null) DialoguePanel.Style.FontSize = new Length() { Unit = LengthUnit.Pixels, Value = FontSize.Value };
+	}
+
+	private void PushSounds()
+	{
+		DialoguePanel.Sounds = Sounds;
+	}
+
+	private void PushActionGraphFunctions()
+	{
+		DialoguePanel.OnCharacterPrintedAction += OnCharacterPrintedAction;
+		DialoguePanel.OnControlCodeHitAction += OnControlCodeHitAction;
+		DialoguePanel.OnAllCharactersPrintedAction += OnAllCharactersPrintedAction;
+		DialoguePanel.OnAllDialogueDisplayedAction += OnAllDialogueDisplayedAction;
+	}
+
+}
