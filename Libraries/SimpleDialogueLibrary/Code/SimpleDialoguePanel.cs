@@ -55,6 +55,12 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 
 	public bool WaitForTextCompletion = false;
 
+	public bool SpeedUp = false;
+
+	public string AdvanceCharacterKey { get; set; }
+	public string? SpeedUpKey { get; set; }
+	public float DelayAmountRemoved { get; set; }
+
 	// ==========================================================
 
 	public IDialoguePanel.OnCharacterPrinted OnCharacterPrintedAction { get; set; }
@@ -356,7 +362,8 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 	public void CallNextCharacterParse()
 	{
 		// Start drawing.
-		InvokeOnce( "ParseCharacter", CharacterDelay + AdditiveCharacterDelay, () =>
+		var delay = SpeedUp ? CharacterDelay - DelayAmountRemoved : CharacterDelay;
+		InvokeOnce( "ParseCharacter", delay + AdditiveCharacterDelay, () =>
 		{
 			//Log.Info( $"parse - index: {Index}, dialogueindex: {ActiveDialogueIndex}, str: {DialogueStrings[ActiveDialogueIndex]}" );
 			if ( Index < ActiveDialogue.Length )
@@ -386,9 +393,11 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 	public override void OnButtonEvent( ButtonEvent e )
 	{
 		base.OnButtonEvent( e );
+		Log.Info( e.Button );
 
-		if ( !e.Pressed ) return;
-		if ( e.Button == "enter" )
+		if ( IgnoreUserInput ) return;
+
+		if ( e.Button == AdvanceCharacterKey && e.Pressed )
 		{
 			ClearDialogue();
 			CreateNewParagraphLabel();
@@ -409,5 +418,13 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 				}
 			}
 		}
+		SpeedUp = (e.Button == SpeedUpKey);
+	}
+
+	[ActionGraphNode( "simpledialogue.newpanel" )]
+	[Title( "Create Dialogue Panel" ), Group( "Simple Dialogue" ), Icon( "exposure_plus_1" )]
+	public static SimpleDialoguePanel CreateNewDialoguePanel()
+	{
+		return new SimpleDialoguePanel();
 	}
 }

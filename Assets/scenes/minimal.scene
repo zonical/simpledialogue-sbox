@@ -5,98 +5,12 @@
       "__guid": "2ec29c12-9f12-4c3b-9d03-08098e970fba",
       "Flags": 0,
       "Name": "Test",
-      "Position": "-126.4293,-187.5311,115.5769",
-      "Enabled": true,
-      "Components": [
-        {
-          "__type": "Sandbox.ScreenPanel",
-          "__guid": "a9cba402-47b3-4f73-a848-835683f7a189",
-          "AutoScreenScale": true,
-          "Opacity": 1,
-          "Scale": 1,
-          "ScaleStrategy": "ConsistentHeight",
-          "ZIndex": 100
-        },
-        {
-          "__type": "SimpleDialogue.SimpleDialoguePanelComponent",
-          "__guid": "95e66848-60b9-456a-acb6-9529b466df7a",
-          "Sounds": [
-            "sounds/snd_txtsans.vsnd"
-          ],
-          "AdvanceCharacterKey": "enter",
-          "BackgroundColor": "0.16744,0.12305,0.16226,1",
-          "BorderColor": "0.6021,0.91163,0.80329,1",
-          "BorderCornerRadius": 10,
-          "BorderSize": 20,
-          "DelayAmountRemoved": 0,
-          "Dialogue": [
-            "* Test dialogue!!! But this is [[color:red]]in red."
-          ],
-          "FontFamily": "EarthBound Dialogue",
-          "FontSize": 50,
-          "FontStyle": "None",
-          "OnCharacterPrintedAction": {
-            "__version": 8,
-            "__guid": "0a0d4330-6955-4a04-8a8c-8ac48268bfbf",
-            "__changeId": 8,
-            "UserData": {
-              "Title": "On Character Printed Action",
-              "ReferencedComponentTypes": []
-            },
-            "Variables": [],
-            "Nodes": [
-              {
-                "Id": 0,
-                "Type": "input"
-              },
-              {
-                "Id": 1,
-                "Type": "log.info",
-                "UserData": {
-                  "Position": "372,0"
-                }
-              }
-            ],
-            "Links": [
-              {
-                "SrcId": 0,
-                "SrcName": "_signal",
-                "DstId": 1,
-                "DstName": "_signal"
-              },
-              {
-                "SrcId": 0,
-                "SrcName": "Character",
-                "DstId": 1,
-                "DstName": "format"
-              }
-            ]
-          },
-          "OverrideStyleSheet": true,
-          "PanelHeight": 300,
-          "PanelWidth": 800,
-          "PrintStyle": "CharacterByCharacter",
-          "RightOffset": 20,
-          "SpeedUpKey": "shift",
-          "TextColor": "1,0.92093,0.84186,1",
-          "TimeDelayPerCharacter": 0.05,
-          "TopOffset": 20,
-          "UsesActionGraph": true,
-          "UsesSounds": true,
-          "WaitForCompletion": true
-        }
-      ]
-    },
-    {
-      "__guid": "f80fd723-6fbf-4290-8e8f-2ed034e3f0b9",
-      "Flags": 0,
-      "Name": "Camera",
-      "Tags": "maincamera",
+      "Position": "-70.90653,0,0",
       "Enabled": true,
       "Components": [
         {
           "__type": "Sandbox.CameraComponent",
-          "__guid": "41a8b6c8-3694-4966-a631-123cef6c28f1",
+          "__guid": "24582c03-3dc7-415c-a019-eb90b2ef6e0e",
           "BackgroundColor": "0.33333,0.46275,0.52157,1",
           "ClearFlags": "All",
           "FieldOfView": 60,
@@ -110,6 +24,80 @@
           "Viewport": "0,0,1,1",
           "ZFar": 10000,
           "ZNear": 10
+        }
+      ]
+    },
+    {
+      "__guid": "a44ff9c4-3a0b-4108-bba0-29c6346faa2c",
+      "Flags": 0,
+      "Name": "Sun",
+      "Position": "104.3723,6.548004,16.73547",
+      "Rotation": "0,0.3826834,0,0.9238796",
+      "Tags": "light_directional,light",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.DirectionalLight",
+          "__guid": "7c30a063-63f2-44b5-a407-d0a7a6916121",
+          "FogMode": "Enabled",
+          "FogStrength": 1,
+          "LightColor": "0.91373,0.98039,1,1",
+          "Shadows": true,
+          "SkyColor": "0,0,0,0"
+        }
+      ]
+    },
+    {
+      "__guid": "102d8564-67c7-4053-ae34-83435b54e762",
+      "Flags": 0,
+      "Name": "Object",
+      "Rotation": "0,0,1,-0.00000004371139",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.WorldPanel",
+          "__guid": "37f5f869-0d54-415b-b174-0f042d62268c",
+          "HorizontalAlign": "Center",
+          "InteractionRange": 1000,
+          "LookAtCamera": false,
+          "PanelSize": "512,512",
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderScale": 1,
+          "VerticalAlign": "Center"
+        },
+        {
+          "__type": "Sandbox.MyComponent",
+          "__guid": "4a5a602d-ace4-4ac2-9401-732fe932913b",
+          "MyStringValue": "Hello World!"
+        }
+      ]
+    },
+    {
+      "__guid": "73a9d9ef-1221-4f13-ae06-070f02eb9e41",
+      "Flags": 0,
+      "Name": "Cube",
+      "Position": "193.0883,55.60735,-83.60686",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "Sandbox.ModelRenderer",
+          "__guid": "c94b0a63-ad1a-4b14-b9ee-122aa59dd386",
+          "BodyGroups": 18446744073709551615,
+          "CreateAttachments": false,
+          "Model": "models/dev/box.vmdl",
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderType": "On",
+          "Tint": "1,1,1,1"
         }
       ]
     }

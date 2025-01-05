@@ -6,7 +6,7 @@ using System.Collections.Generic;
 namespace SimpleDialogue;
 
 [CustomEditor( typeof( FontStyle ) )]
-public class FontStyleWidget : DropdownControlWidget<LengthUnit>
+public class FontStyleWidget : DropdownControlWidget<FontStyle>
 {
 	public FontStyleWidget( SerializedProperty property ) : base( property )
 	{

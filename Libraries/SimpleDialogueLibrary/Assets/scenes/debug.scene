@@ -1,0 +1,86 @@
+{
+  "__guid": "d61ca116-7a4a-45c3-8643-2c05f29027a0",
+  "GameObjects": [
+    {
+      "__guid": "778c8736-8802-4296-ba2f-66ee7b54637c",
+      "Flags": 0,
+      "Name": "Panel",
+      "Enabled": true,
+      "Components": [
+        {
+          "__type": "SimpleDialogue.SimpleDialoguePanelComponent",
+          "__guid": "e1404aa1-4e79-46fa-a50b-eca00405a5ef",
+          "Sounds": [
+            "sounds/snd_txtsans.vsnd"
+          ],
+          "AdvanceCharacterKey": "enter",
+          "BackgroundColor": "0.16744,0.12305,0.16226,1",
+          "BorderColor": "0.6021,0.91163,0.80329,1",
+          "BorderCornerRadius": 10,
+          "BorderSize": 20,
+          "DelayAmountRemoved": 0.05,
+          "Dialogue": [
+            "* Test dialogue!!! But this is [[color:red]]in red."
+          ],
+          "FontFamily": "EarthBound Dialogue",
+          "FontSize": 50,
+          "FontStyle": "None",
+          "OverrideStyleSheet": true,
+          "PanelHeight": 200,
+          "PanelWidth": 800,
+          "PrintStyle": "CharacterByCharacter",
+          "SpeedUpKey": "lshift",
+          "TextColor": "1,0.92093,0.84186,1",
+          "TimeDelayPerCharacter": 0.05,
+          "UsesActionGraph": true,
+          "UsesSounds": true,
+          "WaitForCompletion": true
+        },
+        {
+          "__type": "Sandbox.WorldPanel",
+          "__guid": "99140c98-9a64-427c-9859-02d21e6b1fd3",
+          "HorizontalAlign": "Center",
+          "InteractionRange": 1000,
+          "LookAtCamera": false,
+          "PanelSize": "1920,1080",
+          "RenderOptions": {
+            "GameLayer": true,
+            "OverlayLayer": false,
+            "BloomLayer": false,
+            "AfterUILayer": false
+          },
+          "RenderScale": 0.5625,
+          "VerticalAlign": "Center"
+        }
+      ]
+    }
+  ],
+  "SceneProperties": {
+    "FixedUpdateFrequency": 50,
+    "MaxFixedUpdates": 5,
+    "NetworkFrequency": 30,
+    "NetworkInterpolation": true,
+    "PhysicsSubSteps": 1,
+    "ThreadedAnimation": true,
+    "TimeScale": 1,
+    "UseFixedUpdate": true,
+    "Metadata": {},
+    "NavMesh": {
+      "Enabled": false,
+      "IncludeStaticBodies": true,
+      "IncludeKeyframedBodies": true,
+      "EditorAutoUpdate": true,
+      "AgentHeight": 64,
+      "AgentRadius": 16,
+      "AgentStepSize": 18,
+      "AgentMaxSlope": 40,
+      "ExcludedBodies": "",
+      "IncludedBodies": ""
+    }
+  },
+  "ResourceVersion": 2,
+  "Title": null,
+  "Description": null,
+  "__references": [],
+  "__version": 2
+}

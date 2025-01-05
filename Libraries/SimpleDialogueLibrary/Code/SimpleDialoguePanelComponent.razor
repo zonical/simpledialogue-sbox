@@ -15,12 +15,15 @@
 	@CharacterDelay=@TimeDelayPerCharacter
 	@DefaultTextColor=@((Color)TextColor)
 	@WaitForTextCompletion=@WaitForCompletion
+	@AdvanceCharacterKey=@AdvanceCharacterKey
+	@SpeedUpKey=@SpeedUpKey
+	@DelayAmountRemoved=@DelayAmountRemoved
 	</SimpleDialoguePanel>
 </root>
 
 @code
 {
-	SimpleDialoguePanel DialoguePanel { get; set; }
+	SimpleDialoguePanel DialoguePanel;
 
 	// ==========================================================
 
@@ -101,7 +104,7 @@
 
 	[Property, Feature("Input"), Header("Speed Up Dialogue"),
 	ShowIf("PrintStyle", DialoguePrintStyle.CharacterByCharacter)]
-	public string SpeedUpKey { get; set; } = "shift";
+	public string? SpeedUpKey { get; set; }
 
 	[Property, Feature("Input"),
 	ShowIf("PrintStyle", DialoguePrintStyle.CharacterByCharacter),
@@ -137,13 +140,16 @@
 	/// </summary>
 	protected override int BuildHash() => System.HashCode.Combine(Dialogue, DialoguePanel?.DisplayedDialogue);
 
+
 	protected override void OnTreeFirstBuilt()
 	{
 		base.OnTreeFirstBuilt();
+		Log.Info("Building SimpleDialoguePanelComponent");
 
 		if (DialoguePanel is null) return;
 		BuildStyle();
 		PushSounds();
+		PushActionGraphFunctions();
 	}
 
 	private void BuildStyle()
