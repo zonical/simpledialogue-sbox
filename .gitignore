@@ -26,3 +26,6 @@ code/Properties/*
 
 # Exported / standalone games
 Exports/
+
+*.ttf
+Libraries/SimpleDialogueLibrary/Assets/scenes/*
