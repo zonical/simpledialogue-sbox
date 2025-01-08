@@ -60,6 +60,10 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 	public string AdvanceCharacterKey { get; set; }
 	public string? SpeedUpKey { get; set; }
 	public float DelayAmountRemoved { get; set; }
+	public bool CloseOnCompletion { get; set; }
+
+	public bool CurrentStringCompleted { get; private set; } = false;
+	public bool AllDialogueDisplayed { get; private set; } = false;
 
 	// ==========================================================
 
@@ -127,7 +131,7 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 	/// instead of using label to ensure compatibility with the span element.
 	/// </summary>
 	/// <returns></returns>
-	private Label CreateNewParagraphLabel()
+	internal Label CreateNewParagraphLabel()
 	{
 		var label = new Label();
 		
@@ -140,7 +144,7 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 		return label;
 	}
 
-	private void StyleLabel( Label label, string style, string data )
+	internal void StyleLabel( Label label, string style, string data )
 	{
 		switch ( style )
 		{
@@ -151,7 +155,7 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 
 			default:
 			{
-				throw new ArgumentException( $"Style \"{style}\" not supported." );
+				Log.Warning( $"Style \"{style}\" not supported." ); break;
 			}
 		}
 	}
@@ -164,7 +168,7 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 	//		Change text font: [[font:Arial]]
 	//		Change text size: [[size:50]]
 	//		Delay text printing: [[wait:5]]
-	private void ExecuteControlCode( string code )
+	internal void ExecuteControlCode( string code )
 	{
 		var label = Labels.Where( l => l.ElementName == "p" ).Last();
 		
@@ -213,6 +217,8 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 				label.ElementName = "span";
 				label.Parent = prevLabel;
 
+				OnControlCodeHitAction?.Invoke( this, label, key, data );
+
 				StyleLabel( label, key, data );
 			}
 		}
@@ -223,7 +229,7 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 	/// </summary>
 	/// <param name="character">Incoming character.</param>
 	/// <param name="index">Index of the incoming character from the dialogue string.</param>
-	private void ParseCharacter( char character, int index )
+	internal void ParseCharacter( char character, int index )
 	{
 		switch ( character )
 		{
@@ -299,7 +305,7 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 	/// <summary>
 	/// Called when a character is displayed on the screen.
 	/// </summary>
-	private void OnCharacterDisplayed( char character, int index )
+	internal void OnCharacterDisplayed( char character, int index )
 	{
 		// Reset additive delay. It is only present for one character.
 		AdditiveCharacterDelay = 0;
@@ -316,7 +322,7 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 	/// <summary>
 	/// Plays a random dialogue sound.
 	/// </summary>
-	private void PlayRandomSound()
+	internal void PlayRandomSound()
 	{
 		var sound = Random.Shared.FromList( Sounds );
 		// Sanity null check because a user can put an empty sound file into the list
@@ -330,7 +336,7 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 	/// <summary>
 	/// Resets dialogue related variables.
 	/// </summary>
-	private void ClearDialogue()
+	internal void ClearDialogue()
 	{
 		foreach ( var label in Labels )
 		{
@@ -347,12 +353,27 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 	/// <summary>
 	/// Duh.
 	/// </summary>
-	private void AdvanceDialogue()
+	internal void AdvanceDialogue()
 	{
-		ActiveDialogueIndex++;
 		if ( ActiveDialogueIndex < DialogueStrings.Count() )
 		{
 			ActiveDialogue = DialogueStrings[ActiveDialogueIndex];
+			CurrentStringCompleted = false;
+
+			switch ( PrintStyle )
+			{
+				case DialoguePrintStyle.CharacterByCharacter:
+				{
+					CallNextCharacterParse();
+					break;
+				}
+				case DialoguePrintStyle.AllAtOnce:
+				{
+					ParseAllAtOnce();
+					PlayRandomSound();
+					break;
+				}
+			}
 		}
 	}
 
@@ -371,13 +392,18 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 				if ( Game.IsPaused ) return;
 				ParseCharacter( ActiveDialogue[Index], Index );
 			}
+			else
+			{
+				OnAllCharactersPrintedAction?.Invoke( this, ActiveDialogueIndex, DisplayedDialogue );
+				CurrentStringCompleted = true;
+			}
 		} );
 	}
 
 	/// <summary>
 	/// Parses all of the dialogue at once.
 	/// </summary>
-	private void ParseAllAtOnce()
+	internal void ParseAllAtOnce()
 	{
 		// Don't know if a while loop is the safest here, but it's here!
 		while ( Index < ActiveDialogue.Length )
@@ -399,32 +425,33 @@ public class SimpleDialoguePanel : Panel, IDialoguePanel
 
 		if ( e.Button == AdvanceCharacterKey && e.Pressed )
 		{
+			if ( WaitForTextCompletion && !CurrentStringCompleted ) return;
+
+			ActiveDialogueIndex++;
+
+			// If we've finished displaying all of our dialogue,
+			// delete the panel.
+			if ( ActiveDialogueIndex >= DialogueStrings.Count() )
+			{
+				OnAllDialogueDisplayedAction?.Invoke( this );
+				AllDialogueDisplayed = true;
+
+				if ( CloseOnCompletion )
+				{
+					Delete();
+					ActiveLabel.Delete();
+				}
+
+				CancelInvoke( "ParseCharacter" );
+				return;
+			}
+
 			ClearDialogue();
 			CreateNewParagraphLabel();
 			AdvanceDialogue();
-
-			switch ( PrintStyle )
-			{
-				case DialoguePrintStyle.CharacterByCharacter:
-				{
-					CallNextCharacterParse();
-					break;
-				}
-				case DialoguePrintStyle.AllAtOnce:
-				{
-					ParseAllAtOnce();
-					PlayRandomSound();
-					break;
-				}
-			}
 		}
-		SpeedUp = (e.Button == SpeedUpKey);
-	}
 
-	[ActionGraphNode( "simpledialogue.newpanel" )]
-	[Title( "Create Dialogue Panel" ), Group( "Simple Dialogue" ), Icon( "exposure_plus_1" )]
-	public static SimpleDialoguePanel CreateNewDialoguePanel()
-	{
-		return new SimpleDialoguePanel();
+		// If we're pressing the speed up key, obviously speed things up!
+		SpeedUp = (e.Button == SpeedUpKey);
 	}
 }

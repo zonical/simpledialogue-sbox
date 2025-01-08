@@ -1,77 +1,60 @@
 ﻿using Sandbox;
 using Editor;
 using System.Linq;
-using SimpleDialoguePanelComponent = SimpleDialogue.SimpleDialoguePanelComponent;
-using Editor.ShaderGraph.Nodes;
 
 namespace SimpleDialogue;
 
 public class DialogueDisplayWidget : Widget
 {
-	public Scene Scene;
-	SceneRenderingWidget CanvasWidget;
-
-	SimpleDialoguePanelComponent PanelComponent => Scene.GetAllComponents<SimpleDialoguePanelComponent>().First();
-	WorldPanel WorldPanel => Scene.GetAllComponents<WorldPanel>().First();
-
-	SceneFile File => ResourceLibrary.Get<SceneFile>( "scenes/debug.scene" );
+	public DialoguePanelStyle Resource { get; set; }
+	public Label DialogueTestLabel { get; set; }
 
 	public DialogueDisplayWidget() : base( null )
 	{
-		CreateScene();
+		FixedSize = 100;
 
-		Layout = Layout.Column();
+		DialogueTestLabel = new Label(this);
+		DialogueTestLabel.Text = 
+			"Lorem ipsum dolor sit amet...";
 
-		CanvasWidget = new SceneRenderingWidget( this );
-		CanvasWidget.SetSizeMode( SizeMode.CanGrow, SizeMode.CanGrow );
-
-		Layout.Add( CanvasWidget );
-
-		FixedSize = new Vector2(1000, 500);
-		SetSizeMode( SizeMode.CanGrow, SizeMode.CanGrow );
-	}
-
-	public override void OnDestroyed()
-	{
-		Scene.Destroy();
-	}
-
-	public void CreateScene()
-	{
-		Scene = new Scene();
-		Scene.Load( File );
-
-		using (Scene.Push())
-		{
-			var go = new GameObject( true, "PanelContainer" );
-			var panel = go.AddComponent<ScreenPanel>();
-			var comp = go.AddComponent<SimpleDialoguePanelComponent>();
-			
-			var camera = new GameObject( true, "Camera" ).AddComponent<CameraComponent>();
-			camera.WorldPosition = new Vector3( 100, 0, 0 );
-			camera.WorldRotation = new Angles( 0, -180, 0 );
-			camera.Orthographic = true;
-			camera.OrthographicHeight = 54;
-			camera.IsMainCamera = true;
-			camera.Tags.Add( "maincamera" );
-		}
+		DialogueTestLabel.Alignment = TextFlag.LeftTop;
+		DialogueTestLabel.WordWrap = true;
 	}
 
 	[EditorEvent.Frame]
 	public void OnFrame()
 	{
-		CanvasWidget.Scene = Scene.Scene;
-		Scene.EditorTick(RealTime.Now, RealTime.Delta);
-	}
+		var width = Resource.PanelWidth is not null ? (float)Resource.PanelWidth : 100.0f;
+		var height = Resource.PanelHeight is not null ? (float)Resource.PanelHeight : 100.0f;
+		FixedSize = new Vector2( width, height );
 
-	[EditorEvent.Hotload]
-	public void OnHotload()
-	{
-		Scene.Destroy();
-		CreateScene();
+		var borderSize = Resource.BorderSize ?? 20.0f;
+		var color = Resource.TextColor ?? Color.White;
+		var textSize = (Resource.FontSize ?? 20);
+		var font = Resource.FontFamily ?? "Poppins";
+
+		DialogueTestLabel.Position = new Vector2( 20 + borderSize, 20 + borderSize );
+		DialogueTestLabel.SetStyles( 
+			$"font-family: \"{font}\"; " +
+			$"font-size: {textSize}px; " +
+			$"color: {color.Hex};" +
+			$"white-space: nowrap;" );
+
+		DialogueTestLabel.Size = new Vector2( width - borderSize - 60, height - borderSize - 60 );
 	}
 
 	protected override void OnPaint()
 	{
+		Paint.ClearBrush();
+		Paint.ClearPen();
+
+		// Border
+		Paint.SetBrush( Resource.BorderColor ?? Color.White );
+		Paint.DrawRect( new Rect( new Vector2( 0, 0 ), FixedSize ) );
+
+		// Background inner color.
+		var borderSize = Resource.BorderSize ?? 20.0f;
+		Paint.SetBrush( Resource.BackgroundColor ?? Color.Black );
+		Paint.DrawRect( new Rect( new Vector2( borderSize, borderSize ), FixedSize - ( borderSize * 2 ) ) );;
 	}
 }
